@@ -2,9 +2,13 @@
 <html>
 <head>
 <title>Facebook Login JavaScript Example</title>
+
+<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false"></div>
 <meta charset="UTF-8">
 </head>
 <body>
+    <div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0&appId=931754414152513&autoLogAppEvents=1" nonce="xBJgIgDE"></script>
 <script>
 
   function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
@@ -17,6 +21,7 @@
         'into this webpage.';
     }
   }
+  
 
 
   function checkLoginState() {               // Called when a person is finished with the Login Button.
