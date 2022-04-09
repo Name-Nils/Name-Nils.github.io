@@ -2,41 +2,122 @@
 <html>
 
 <head>
-    <title>Nils Extremely Adcanced Website</title>
 
+
+    <title>A2</title>
+
+    <link href="jquery-ui/jquery-ui.css" rel="stylesheet">
+
+    <script type="text/javascript" src="jquery3.6.min.js"></script>
+
+    <script src="jquery-ui/jquery-ui.js"></script>
+    <meta http-equiv="refresh" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
     <style>
-        screen {
-            width: 200px;
-            border: 1px solid #2d2d2d;
-            display: flex;
-            justify-content: center;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
+        
+       #firstStep{
+           position: absolute;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.041), rgb(13, 10, 49));
+       }
 
-        main_box {
-            color: #fff;
-            background: #2d2d2d;
-            padding: 12px;
-            display: inline-block;
-        }
     </style>
-
-
-    <script src="untiltels.min.js"></script>
 </head>
 
 <body>
-    <screen>
-        <main_box>
-            hello
-        </main_box>
-
-        <menu>
-            
-        </menu>
-    </screen>
+    
+    <canvas id="firstStep"></canvas>
 
     <script>
+        const canvas1 = document.getElementById('firstStep');
+        const content = canvas1.getContext("2d");
+        canvas1.width = window.innerWidth;
+        canvas1.height = window.innerHeight;
+        const particlesArray = [];
+        let colorVar = 0;
+
+        const mouse = {
+            x: undefined,
+            y: undefined,
+        };
+
+        window.addEventListener('resize', function(){
+            canvas1.width = window.innerWidth;
+            canvas1.height = window.innerHeight;
+        });
+
+        function cornfieldChase() {
+            
+        }
+        
+        canvas1.addEventListener('click', function(event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+            for (let i = 0; i < 10; i++) {
+                particlesArray.push(new Particle());
+            }
+        });
+
+        canvas1.addEventListener('mousemove', function(event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+            for (let i = 0; i < 5; i++) {
+                particlesArray.push(new Particle());
+            }
+        });
+
+        class Particle{
+            constructor() {
+                this.x = event.x;
+                this.y = event.y;
+                this.size = Math.random() * 15 + 1;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = 'hsl(' + colorVar + ', 100%, 50%)'
+
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.1;
+            }
+            draw() {
+                content.fillStyle = this.color;
+                content.beginPath();
+                content.arc(this.x, this.y, this.size, 0, Math.PI *2);
+                content.fill();
+            }
+        };
+
+        function handleParticles() {
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                if (particlesArray[i].size <= 0.3) {
+                    particlesArray.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        function animate(){
+            //content.clearRect(0, 0, canvas1.width, canvas1.height);
+            content.fillStyle = 'rgb(0, 0, 0, 0.02)'
+            content.fillRect(0, 0,canvas1.width, canvas1.height);
+            colorVar++;
+            handleParticles();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+        
+
+
 
     </script>
 
