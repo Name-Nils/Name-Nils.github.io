@@ -71,7 +71,7 @@ function handleParticles() {
 
 function animate() {
     //content.clearRect(0, 0, canvas1.width, canvas1.height);
-    content.fillStyle = 'rgb(0, 0, 0, 0.02)'
+    content.fillStyle = 'rgb(0, 0, 0, 0.2)'
     content.fillRect(0, 0, canvas1.width, canvas1.height);
     colorVar++;
     handleParticles();
@@ -79,6 +79,3 @@ function animate() {
 }
 
 animate();
-
-
-
