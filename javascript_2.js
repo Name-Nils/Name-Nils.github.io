@@ -46,7 +46,7 @@ let mouseDown = '';
 canvas.addEventListener('mousedown', () => {
     mouseDown = true;
     
-});
+});   
 
 canvas.addEventListener('touchstart', () => {
     mouseDown = true;
