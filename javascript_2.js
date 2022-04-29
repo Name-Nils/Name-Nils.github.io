@@ -48,6 +48,16 @@ canvas.addEventListener('mousedown', () => {
     
 });
 
+canvas.addEventListener('touchdown', () => {
+    mouseDown = true;
+    
+});
+
+window.addEventListener('touchup', () => {
+    mouseDown = false;
+    
+});
+
 window.addEventListener('mouseup', () => {
     mouseDown = false;
     
