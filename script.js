@@ -40,6 +40,20 @@ function clock() {
 
 }
 
+
+class Color{
+    constructor(r = Math.random() * 255.0, g = Math.random() * 255.0, b = Math.random() * 255.0, a = 1.0)
+    {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+    get_str()
+    {
+        return "rgb(" + String(this.r) + "," + String(this.g) + "," + String(this.b) + "," + String(this.a) + ")";
+    }
+}
 //setInterval(clock, 1);
 
 let particles = [];
@@ -63,8 +77,16 @@ class Particle {
         this.direction = true;
     }
     draw(){
+        let delta_time = (Date.now() - this.start_time) / 1.0e3;
+        if (delta_time > 5.0) return;
+        if (delta_time > 3.0)
+        {
+            this.color.a = this.color.a * 0.95;
+        }
+
+
         c.beginPath()
-        c.strokeStyle = this.color
+        c.strokeStyle = this.color.get_str();
         // c.arc(this.x, this.y, 10, 0, Math.PI *2)
         c.moveTo(this.last_x, this.last_y)
         c.lineTo(this.x,this.y);
@@ -89,8 +111,6 @@ class Particle {
     {
         const accel = 9.81 * 100;
         const height = innerHeight;
-
-        //console.log(this.speed);
 
         
         let delta_time = (Date.now() - this.last_time) / 1.0e3;
@@ -127,24 +147,39 @@ class Particle {
 }
 create = function()
 {
-    for (let i = 0; i < 10; i++){
+    for (let i = 0; i < 1; i++){
         let x = innerWidth / 2;
         let y = Math.random() * innerHeight;
         let speed = Math.random() * 1500;
 
-        let color = "rgb(" + String(Math.random() * 255) + "," + String(Math.random() * 255) + "," + String(Math.random() * 255) + ",1)";
+        let color = new Color();
         
         particles.push(new Particle(x, y, speed, color));
     }
 }
 create()
 
-console.log(particles);
+add = function(x, y)
+{
+    for (let i = 0; i < 10; i++)
+    {
+        let speed = Math.random() * 1500 - 750;
+        
+        let color = new Color();
+        
+        particles.push(new Particle(x, y, speed, color));
+    }
+}
+
+window.addEventListener("click", function(event){
+    add(event.x, event.y);
+})
+
+
 
 function animate()
 {
-
-    c.fillStyle = 'rgb(0, 0, 0, 0.1)'
+    c.fillStyle = 'rgb(0, 0, 0, 0.01)'
     c.fillRect(0, 0, innerWidth, innerHeight);
 
     for (let i = 0; i < particles.length; i++)
