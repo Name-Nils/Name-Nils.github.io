@@ -56,7 +56,7 @@ class Rect
 
 class Particle
 {
-    constructor(x, y, y_speed, x_speed, color, radius)
+    constructor(x, y, y_speed, x_speed, color, radius, fade_time)
     {
         this.x = x;
         this.y = y;
@@ -69,6 +69,7 @@ class Particle
         this.y_speed = y_speed;
         this.color = color;
         this.radius = radius;
+        this.fade_time = fade_time;
 
         this.start_time = Date.now();
         this.last_calc_time = Date.now();
@@ -99,7 +100,7 @@ class Particle
         }
     }
 
-    draw(fade_time)
+    draw()
     {
         this.rectangles.push(new Rect(this.x, this.y, this.last_x, this.last_y, this.radius, this.color));
         this.last_x = this.x;
@@ -109,7 +110,7 @@ class Particle
         let finsihed_start = false;
         for (let i = 0; i < this.rectangles.length; i++)
         {
-            let rtn = this.rectangles[i].draw(fade_time);
+            let rtn = this.rectangles[i].draw(this.fade_time);
             if (rtn && !finsihed_start)
             {
                 remove_start = i;
@@ -135,9 +136,9 @@ function rand(n = 1)
 
 document.addEventListener("click", function(event) 
 {
-    for (let i = 0; i < 10; i++)
+    for (let i = 0; i < 5; i++)
     {
-        particles.push(new Particle(event.x, event.y, rand(2000), rand(400), new Color(), rand(20)));
+        particles.push(new Particle(event.x, event.y, rand(3000), rand(400), new Color(), rand(20), rand(4.0) + 3));
     }
 })
 
