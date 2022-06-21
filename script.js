@@ -1,193 +1,167 @@
 const canvas = document.querySelector('canvas');
-
 const c = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
-
 canvas.height = window.innerHeight;
 
-window.addEventListener('resize', () => {
 
-    canvas.width = innerWidth;
-
-    canvas.height = innerHeight;
-
-    // spawn();
-
-});
-
-let miliseconds = 0;
-
-function clock() {
-    function spawn(){
-        c.beginPath()
-        c.fillStyle = "#1B2430"
-        c.arc(innerWidth - 40, 40, 20, 0, Math.PI *2)
-        c.fill()
-        c.closePath()
-    }
-    spawn()
-    miliseconds = new Date().getSeconds();
-    
-    var milisecondsAngle = miliseconds * 2 * Math.PI / 1000;
-    c.beginPath()
-    c.strokeStyle = "white";
-    c.lineWidth = "2";
-    c.moveTo(innerWidth - 40, 40);
-    c.lineTo(innerWidth - 40 + Math.sin(milisecondsAngle) * 40 * 0.3, 40 - Math.cos(milisecondsAngle) * 40 * 0.3);
-    c.stroke();
-    c.closePath()
-
-}
-
-
-class Color{
-    constructor(r = Math.random() * 255.0, g = Math.random() * 255.0, b = Math.random() * 255.0, a = 1.0)
+class Color
+{
+    constructor(r = Math.random() * 255, g = Math.random() * 255, b = Math.random() * 255, t = 1.0)
     {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.a = a;
+        this.t = t;
     }
-    get_str()
+
+    get_str ()
     {
-        return "rgb(" + String(this.r) + "," + String(this.g) + "," + String(this.b) + "," + String(this.a) + ")";
+        return "rgb(" + String(this.r) + "," + String(this.g) + "," + String(this.b) + "," + String(this.t) + ")";
     }
 }
-//setInterval(clock, 1);
+
+class Rect
+{
+    constructor(x1, y1, x2, y2, radius, color)
+    {
+        this.x1 = x1;
+        this.x2 = x2
+        this.y1 = y1;
+        this.y2 = y2;
+        this.radius = radius;
+        this.color = color;
+
+        this.time = Date.now();
+    }
+
+    draw(fade_time)
+    {
+        
+        this.color.t = 1 - (((Date.now() - this.time) / 1.0e3) / fade_time);
+        
+        c.beginPath();
+        c.strokeStyle = this.color.get_str();
+        c.moveTo(this.x1, this.y1);
+        c.lineTo(this.x2,this.y2);
+        c.lineWidth = this.radius;
+        c.stroke();
+        c.closePath();
+        
+        if (this.color.t < 0.0) return 1;
+        if (this.x1 > innerWidth || this.x1 < 0) return 2;
+        return 0;
+    }
+}
+
+
+class Particle
+{
+    constructor(x, y, y_speed, x_speed, color, radius)
+    {
+        this.x = x;
+        this.y = y;
+
+        this.last_x = x;
+        this.last_y = y;
+
+
+        this.x_speed = x_speed;
+        this.y_speed = y_speed;
+        this.color = color;
+        this.radius = radius;
+
+        this.start_time = Date.now();
+        this.last_calc_time = Date.now();
+    
+        this.accel = 9.82 * 100;
+
+
+        this.rectangles = [];
+    }
+
+    bounce()
+    {
+        const friction_loss = 0.85;
+
+        let current_time = Date.now();
+        let delta_loop = (current_time - this.last_calc_time) / 1.0e3;
+        this.last_calc_time = current_time;
+
+        this.y_speed += this.accel * delta_loop;
+
+        this.x += this.x_speed * delta_loop;
+        this.y += this.y_speed * delta_loop;
+
+        if (this.y >= innerHeight - this.radius)
+        {
+            this.y_speed = -this.y_speed * friction_loss;
+            this.y = innerHeight - this.radius;
+        }
+    }
+
+    draw(fade_time)
+    {
+        this.rectangles.push(new Rect(this.x, this.y, this.last_x, this.last_y, this.radius, this.color));
+        this.last_x = this.x;
+        this.last_y = this.y;
+
+        let remove_start = 0;
+        let finsihed_start = false;
+        for (let i = 0; i < this.rectangles.length; i++)
+        {
+            let rtn = this.rectangles[i].draw(fade_time);
+            if (rtn && !finsihed_start)
+            {
+                remove_start = i;
+            }
+            else 
+            {
+                finsihed_start = true;
+            }
+        }
+        
+        this.rectangles.splice(0, remove_start);
+    }
+}
+
+
 
 let particles = [];
 
-
-class Particle {
-    constructor(x, y, s = 0.0, color, x_speed = Math.random() * 600 - 300){
-        this.x = x
-        this.y = y
-        this.last_x = x;
-        this.last_y = y;
-        this.original_y = this.y;
-        
-        this.color = color; 
-        
-        this.x_speed = x_speed;
-        this.speed = s;
-        this.start_time = Date.now();
-        this.last_time = Date.now()
-
-        this.direction = true;
-    }
-    draw(){
-        let delta_time = (Date.now() - this.start_time) / 1.0e3;
-        if (delta_time > 5.0) return;
-        if (delta_time > 3.0)
-        {
-            this.color.a = this.color.a * 0.95;
-        }
-
-
-        c.beginPath()
-        c.strokeStyle = this.color.get_str();
-        // c.arc(this.x, this.y, 10, 0, Math.PI *2)
-        c.moveTo(this.last_x, this.last_y)
-        c.lineTo(this.x,this.y);
-        c.lineWidth = 5;
-        c.stroke()
-        c.closePath()
-
-
-        this.last_x = this.x;
-        this.last_y = this.y;
-    }
-/*  gravity()
-    {
-        const accel = 9.81;
-        let delta_time = time.time() - this.time_zero;
-        
-        let y = Math.pow(delta_time * accel, 2) / (2 * accel);
-        if (y > this.original_y) this.y = 0;
-        this.y = this.y - y;
-    }*/
-    gravity()
-    {
-        const accel = 9.81 * 100;
-        const height = innerHeight;
-
-        
-        let delta_time = (Date.now() - this.last_time) / 1.0e3;
-        let delta_start_time = (Date.now() - this.start_time) / 1.0e3;
-        this.last_time = Date.now();
-
-        this.speed += delta_time * accel; 
-        this.y += this.speed * delta_time;
-
-        if (this.speed > 1000) this.speed = 1000;
-        if (this.y > height) this.y = height;
-    }
-    bounce()
-    {
-        const accel = 9.81 * 100;
-        const height = innerHeight - 10;
-        const bounce_multi = 0.85;
-
-        let delta_time = (Date.now() - this.last_time) / 1.0e3;
-        let delta_start_time = (Date.now() - this.start_time) / 1.0e3;
-        this.last_time = Date.now();
-
-        this.x += this.x_speed * delta_time;
-
-        this.speed += delta_time * accel;
-        this.y += this.speed * delta_time;
-    
-        if (this.y > height) 
-        {
-            this.speed = -this.speed * bounce_multi;
-            this.y = height;
-        }
-    }
-}
-create = function()
+function rand(n = 1)
 {
-    for (let i = 0; i < 1; i++){
-        let x = innerWidth / 2;
-        let y = Math.random() * innerHeight;
-        let speed = Math.random() * 1500;
-
-        let color = new Color();
-        
-        particles.push(new Particle(x, y, speed, color));
-    }
+    return Math.random() * n - (n/2);
 }
-create()
 
-add = function(x, y)
+document.addEventListener("click", function(event) 
 {
     for (let i = 0; i < 10; i++)
     {
-        let speed = Math.random() * 1500 - 750;
-        
-        let color = new Color();
-        
-        particles.push(new Particle(x, y, speed, color));
+        particles.push(new Particle(event.x, event.y, rand(2000), rand(400), new Color(), rand(20)));
     }
-}
-
-window.addEventListener("click", function(event){
-    add(event.x, event.y);
 })
-
 
 
 function animate()
 {
-    c.fillStyle = 'rgb(0, 0, 0, 0.01)'
-    c.fillRect(0, 0, innerWidth, innerHeight);
+    c.clearRect(0, 0, innerWidth, innerHeight);
 
     for (let i = 0; i < particles.length; i++)
     {
         particles[i].bounce();
-        particles[i].draw();
-    } 
-    
-    requestAnimationFrame(animate)
+        particles[i].draw(2.0);
+    }
+
+    let remove_indx = 0;
+    for (let i = 0; i < particles.length; i++)
+    {
+        if ((Date.now() - particles[i].start_time) / 1.0e3 > 15.0)
+        {
+            remove_indx = i + 1;
+        }
+    }
+    particles.splice(0, remove_indx);
+
+    requestAnimationFrame(animate);
 }
-animate()
+animate();
