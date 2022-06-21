@@ -134,12 +134,21 @@ function rand(n = 1)
     return Math.random() * n - (n/2);
 }
 
-document.addEventListener("click", function(event) 
+function click()
 {
     for (let i = 0; i < 5; i++)
     {
-        particles.push(new Particle(event.x, event.y, rand(3000), rand(400), new Color(), rand(20), rand(4.0) + 3));
+        particles.push(new Particle(event.x, event.y, rand(3000), rand(400), new Color(255,255,255,1), 5, rand(2.0) + 2));
     }
+}
+
+document.addEventListener("click", function(event) 
+{
+    click();
+})
+document.addEventListener("touchclick", function()
+{
+    click();
 })
 
 
