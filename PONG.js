@@ -32,8 +32,11 @@ class Ball
     constructor(px_multiplier)
     { // !! all angles are in radians !!
         this.px_multiplier = px_multiplier;
-        this.a = 0;
-        this.s = 40;
+        this.a = Math.random() * Math.PI * 2;
+        this.s = 30;
+
+        this.pos.x = screen_dimension.x / 2 * px_multiplier;
+        this.pos.y = screen_dimension.y / 2 * px_multiplier;
 
         this.radius = 2.5;
         this.color = "orange";
@@ -84,7 +87,7 @@ class Padel
         this.is_right = is_right;
         this.px_multiplier = px_multiplier;
 
-        this.middle_y = 50; // default the padel to the middle of the screen
+        this.middle_y = screen_dimension.y / 2 * px_multiplier; // default the padel to the middle of the screen
         
         this.color = "red";
         this.dist_edge = 5;
