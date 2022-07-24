@@ -288,6 +288,7 @@ main = function()
         testing.ball.a = Math.random() * Math.PI * 2;
         testing.ball.pos.x = testing.court_width / 2;
         testing.ball.pos.y = screen_dimension.y * testing.px_multiplier / 2;
+        testing.ball.s = 40;
     }
     else
     {
