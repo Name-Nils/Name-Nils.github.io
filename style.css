@@ -7,3 +7,10 @@
     background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.041), rgb(13, 10, 49));
 }
 
+body{
+    margin: 0;
+}
+
+canvas{
+    background-color: rgb(75, 75, 255);
+}
